@@ -7,7 +7,7 @@ print(utilidades.TP_MENSAJE)
 
 #Modulo A
 
-#Ingreso de archivo de entrada, para pruebas archivo_entrada = "texto_ejemplo.txt"
+#Ingreso de archivo de entrada, para pruebas archivo_entrada = "archivos/texto_ejemplo.txt"
 archivo_entrada = utilidades.seleccionar_archivo()
 archivo_salida = "texto_recibido.txt"
 
