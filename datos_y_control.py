@@ -7,46 +7,17 @@ print(utilidades.TP_MENSAJE)
 
 #Modulo A
 
-#Ingreso de archivo de entrada, para pruebas archivo_entrada = "archivos/texto_ejemplo.txt"
-archivo_entrada = utilidades.seleccionar_archivo()
-archivo_salida = "texto_recibido.txt"
+#Ingreso de archivo de entrada, salida y parametros
 
 
-# Parametros de la fuente
-usar_huffman = True
+archivo_entrada = "archivos/enviados/texto_ejemplo.txt" #utilidades.seleccionar_archivo()
+#para pruebas archivo_entrada = "archivos/texto_ejemplo.txt"
 
-# parametros del transmisor/receptor
-# (los completamos otro dia cuando cuando hagamos modulacion y canal)
-esquema_modulacion = None      # puede ser 2-PAM, 4-PSK, 8-QAM, etc.
-M = None                       # orden de mod
-etiquetado = None              # gray o binario
+#def parametros(huffman_ctrl, esquema_modulacion_ctrl , orden_ctrl , etiquetado_ctrl,ruido_awgn_ctrl,  respuesta_impulsiva_ctrl , atenuacion_ctrl,mostrar_tablas_ctrl,mostrar_resultados_ctrl,mostrar_constelaciones_ctrl):
+parametros = utilidades.parametros(True,None,None,None,None,None,None,True,True,False)
 
-# params del canal
-ruido_awgn = None              # potencia de ruido, varianza, Eb/N0, etc.
-respuesta_impulsiva = None     # mas adelante
-atenuacion = None              # mas adelante
+trama_binaria, diccionario = utilidades.transmitir_archivo(archivo_entrada, parametros)
 
-# params de control
-mostrar_tablas = True
-mostrar_resultados = True
-mostrar_constelaciones = False   # en el A y B todavia no lo usamos
+trama_binaria_recibida = canal.efectos_del_canal(trama_binaria,parametros)
 
-print("Parametros inicializados correctamente.")
-print(f"Archivo de entrada: {archivo_entrada}")
-print(f"Archivo de salida: {archivo_salida}")
-
-
-#Modulo B
-
-# 1) Probabilidades
-vector_prob = transmisor.obtener_vector_probabilidades(archivo_entrada)
-
-print("Vector de probabilidades:")
-print(vector_prob)
-
-# 2) Entropía
-probabilidades = vector_prob[:,1].astype(float)
-
-H = transmisor.Calcular_entropia(probabilidades)
-
-print("Entropia de la fuente:", H)
+utilidades.recibir_archivo(trama_binaria_recibida, diccionario)
