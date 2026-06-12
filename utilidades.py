@@ -47,20 +47,23 @@ def parametros(usar_huffman, esquema_modulacion ,  M , etiquetado,ruido_awgn,  r
     return  parametros
 
 
-def mostrar(vector_probabilidades,entropia,vector_codigos, diccionario,Long_cod,vector_codificado,trama_binaria ,long_min):
+def mostrar(vector_probabilidades,entropia,vector_codigos, diccionario,Long_cod,vector_codificado,trama_binaria ,long_min,mostrar_tablas_flag,mostrar_constelaciones):
 
     print("\n" + "="*50)
     print("📊 RESULTADOS")
     print("="*50)
     
-    print("\n🔹 Vector de probabilidades:")
-    print(vector_probabilidades)
+    if(mostrar_tablas_flag):
+        print("\n🔹 Vector de probabilidades:")
+        print(vector_probabilidades)
 
     print("\n🔹 Entropía:")
     print(f"{entropia:.4f} bits")
 
-    print("\n🔹 Vector de códigos:")
-    print(vector_codigos)
+
+    if(mostrar_tablas_flag):
+        print("\n🔹 Vector de códigos:")
+        print(vector_codigos)
 
     print("\n🔹 Diccionario (símbolo -> código):")
     for simbolo, codigo in diccionario.items():
@@ -72,11 +75,13 @@ def mostrar(vector_probabilidades,entropia,vector_codigos, diccionario,Long_cod,
     print("\n🔹 Longitud minima del código:")
     print(f"{long_min:.4f} bits")
 
-    print("\n🔹 Vector codificado:")
-    print(vector_codificado)
+    if(mostrar_tablas_flag):
+        print("\n🔹 Vector codificado:")
+        print(vector_codificado)
 
-    print("\n🔹 Trama binaria:")
-    print(trama_binaria)
+    if(mostrar_tablas_flag):
+        print("\n🔹 Trama binaria:")
+        print(trama_binaria)
 
     print("\n" + "="*50)
     return
@@ -86,7 +91,9 @@ def transmitir_archivo(archivo, parametros):
 
     usar_huffman = parametros["fuente"]["usar_huffman"]
     ruido = parametros["canal"]["ruido_awgn"]
-    mostrar_flag = parametros["control"]["mostrar_resultados"]
+    mostrar_resultados_flag = parametros["control"]["mostrar_resultados"]
+    mostrar_tablas_flag = parametros["control"]["mostrar_tablas"]
+    mostrar_constelaciones = parametros["control"]["mostrar_constelaciones"]
     M = parametros["transmisor"]["M"]
     esquema_modulacion = parametros["transmisor"]["esquema_modulacion"]
 
@@ -105,28 +112,33 @@ def transmitir_archivo(archivo, parametros):
 
     vector_codificado, trama_binaria = transmisor.codificar_texto_huffman(archivo,diccionario)
 
-    if mostrar_flag: 
-        mostrar(vector_probabilidades, entropia, vector_codigos, diccionario,Long_cod, vector_codificado, trama_binaria,long_min)
+    if mostrar_resultados_flag: 
+        mostrar(vector_probabilidades, entropia, vector_codigos, diccionario,Long_cod, vector_codificado, trama_binaria,long_min,mostrar_tablas_flag,mostrar_constelaciones)
 
     # item C
 
-    if mostrar_flag: 
+    if mostrar_resultados_flag: 
         print(f"\n🔹 Modulación: {M} - {esquema_modulacion}\n")
         
     simbolos, puntos, mapa, bps, n_bits_original, n_padding = transmisor.modulador(trama_binaria, esquema_modulacion , M, 'gray', 1,True)
 
-    transmisor.graficar_constelacion(puntos, mapa, bps, 'Constelacion', None, None)
+    if mostrar_constelaciones:
+        transmisor.graficar_constelacion(puntos, mapa, bps, 'Constelacion', None, None)
 
 
-    return trama_binaria, diccionario
+    return trama_binaria, diccionario, simbolos, puntos,mapa ,bps
 
 
-def recibir_archivo(trama_binaria_recibida, diccionario):
+def recibir_archivo(trama_binaria_recibida, diccionario,simbolos,puntos,parametros,mapa,bps):
 
-
+    esquema = parametros["transmisor"]["esquema_modulacion"]
     print("\n" + "="*60)
     print("📥 RECEPTOR")
     print("="*60)
+
+    indices = receptor._detectar_indices(simbolos, puntos, esquema)
+
+    trama_binaria_recibida = receptor.demodulador(simbolos,puntos,mapa,bps,esquema)
 
     texto_decodificado = receptor.decodificador(trama_binaria_recibida, diccionario)
     print("\n🔹Texto decodificado en el receptor:")
