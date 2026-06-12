@@ -17,6 +17,8 @@
 # Implementación
 
 import numpy as np
+import matplotlib.pyplot as plt 
+import utilidades as util
 
 # 1) Implemente una función de lectura y análisis estadístico del archivo de texto, que reciba un archivo en
 # formato .txt, lea uno por uno sus caracteres y devuelva un vector con la probabilidad de aparición de
@@ -93,7 +95,7 @@ def asignar_codigos_huffman(nodo, prefijo="", diccionario=None):
 def codigo_huffman(vector_probabilidades):
     nodos = []
 
-    # armamos la lista de nodos con provavilidad y simbolo
+    # armamos la lista de nodos con probavilidad y simbolo
     for fila in vector_probabilidades:
         caracter = fila[0]
         probabilidad = float(fila[1])
@@ -178,34 +180,137 @@ def codificar_texto_huffman(archivo, diccionario_huffman):
     return vector_codificado, trama_binaria
 
 
-# Pruebas
-# # Prueba 1)
-# archivo = "texto_ejemplo.txt"
+# item C)
 
-# vector_de_proba = obtener_vector_probabilidades(archivo)
+def modulador(bits, esquema, M, etiquetado='gray', Eb=1.0, devolver_info=False):
+    # convierte vector de bits en simbolos modulados
+    # esquema: 'QAM' o 'FSK' | etiquetado: 'gray' o 'binario' (solo QAM)
+    # si devolver_info=True, tambien devuelve la longitud original y el padding agregado
+    bps = int(np.log2(M))
 
-# suma = np.sum(vector_de_proba[:,1].astype(float))
+    # convertir bits a lista de enteros si viene como string (tipo 010101)
+    if isinstance(bits, str):
+        bits = [int(bit) for bit in bits]
 
-# if np.isclose(suma, 1):
-#     print("La suma de probabilidades es 1")
-# else:
-#     print("Error: no suma 1")
+    bits = np.asarray(bits, dtype=int)
+
+    # guardamos longitud original antes del padding
+    n_bits_original = len(bits)
+
+    # padding al multiplo de bps mas cercano
+    n_padding =(-n_bits_original) % bps
+
+    if n_padding > 0:
+        bits = np.append(bits, np.zeros(n_padding, dtype=int))
+
+    grupos = bits.reshape(-1, bps)
+
+    if esquema == 'QAM':
+        puntos, mapa_gray, mapa_bin, _ = util._constelacion_qam(M, Eb)
+        mapa = mapa_gray if etiquetado == 'gray' else mapa_bin
+    else:
+        puntos, mapa, _, _ = util._constelacion_fsk(M, Eb)
+    
+    # mapa inverso: etiqueta entera -> indice en puntos
+    inv = {int(v): i for i, v in enumerate(mapa)}
+
+    simbolos = np.array([
+        puntos[inv[int(''.join(map(str, g)), 2)]]
+        for g in grupos
+    ])
+
+    if devolver_info:
+        return simbolos, puntos, mapa, bps, n_bits_original, n_padding
+
+    return simbolos, puntos, mapa, bps
 
 
-# with open(archivo, "r") as f:
-#     contenido = f.read()
 
-# print(contenido)
-
-# print(vector_de_proba)
-
-
-
-# #Prueba 2)
-
-# probabilidades = vector_de_proba[:, 1].astype(float)
-# entropia = Calcular_entropia(probabilidades)
+def energia_media(simbolos, bps):
+    # estima Es y Eb a partir de los simbolos transmitidos
+    if np.iscomplexobj(simbolos):  # QAM
+        Es = float(np.mean(np.abs(simbolos) ** 2))
+    else:                          # FSK: suma de cuadrados por fila
+        Es = float(np.mean(np.sum(simbolos ** 2, axis=1)))
+    return round(Es, 6), round(Es / bps, 6)
 
 
-# print("Entropia :" + str(entropia) )
 
+def graficar_constelacion(puntos, mapa, bps, titulo='Constelacion', recibidos=None, save_path=None):
+    # grafica la constelacion ideal (azul) y opcionalmente los simbolos recibidos (rojo)
+    # QAM: scatter en plano I-Q  |  FSK M=2: scatter en espacio (phi1, phi2)
+    fig, ax = plt.subplots(figsize=(6.5, 6.5))
+    fig.patch.set_facecolor('#fafafa')
+    ax.set_facecolor('#f0f2f5')
+
+    # colores
+    _c_ideal = '#1a56db'
+    _c_ideal_edge = '#1e3a8a'
+    _c_rx = '#e05a4e'
+    _c_dec = '#9ca3af'
+    _c_axis = '#6b7280'
+    _c_lbl = '#374151'
+
+    if np.iscomplexobj(puntos):
+        # --- QAM ---
+        ax.scatter(puntos.real, puntos.imag,
+                   color=_c_ideal, edgecolors=_c_ideal_edge,
+                   linewidths=0.6, s=90, zorder=4)
+        if recibidos is not None:
+            ax.scatter(recibidos.real, recibidos.imag,
+                       color=_c_rx, alpha=0.12, s=5, zorder=2)
+
+        # fronteras de decision en los puntos medios entre niveles
+        I_uniq = np.sort(np.unique(np.round(puntos.real, 8)))
+        Q_uniq = np.sort(np.unique(np.round(puntos.imag, 8)))
+        for x in (I_uniq[:-1] + I_uniq[1:]) / 2:
+            ax.axvline(x, color=_c_dec, lw=0.7, ls='--', alpha=0.65)
+        for y in (Q_uniq[:-1] + Q_uniq[1:]) / 2:
+            ax.axhline(y, color=_c_dec, lw=0.7, ls='--', alpha=0.65)
+
+        # etiquetas binarias sobre cada punto
+        for pt, lbl in zip(puntos, mapa):
+            ax.annotate(format(int(lbl), f'0{bps}b'), (pt.real, pt.imag),
+                        textcoords='offset points', xytext=(5, 5),
+                        fontsize=8, color=_c_lbl)
+
+        ax.axhline(0, color=_c_axis, lw=0.5)
+        ax.axvline(0, color=_c_axis, lw=0.5)
+        ax.set_xlabel('I', color=_c_lbl)
+        ax.set_ylabel('Q', color=_c_lbl)
+
+    else:
+        # --- FSK M=2: espacio 2D (phi1, phi2) ---
+        ax.scatter(puntos[:, 0], puntos[:, 1],
+                   color=_c_ideal, edgecolors=_c_ideal_edge,
+                   linewidths=0.6, s=90, zorder=4)
+        if recibidos is not None:
+            ax.scatter(recibidos[:, 0], recibidos[:, 1],
+                       color=_c_rx, alpha=0.12, s=5, zorder=2)
+
+        # frontera de decision: diagonal phi1 = phi2
+        lim = max(float(np.max(np.abs(puntos))) * 1.6, 1.5)
+        ax.plot([-lim, lim], [-lim, lim], color=_c_dec, lw=0.7, ls='--', alpha=0.65)
+
+        for pt, lbl in zip(puntos, mapa):
+            ax.annotate(format(int(lbl), f'0{bps}b'), (pt[0], pt[1]),
+                        textcoords='offset points', xytext=(5, 5),
+                        fontsize=9, color=_c_lbl)
+
+        ax.set_xlabel('φ₁', color=_c_lbl)
+        ax.set_ylabel('φ₂', color=_c_lbl)
+        ax.set_xlim(-lim, lim)
+        ax.set_ylim(-lim, lim)
+
+    ax.set_title(titulo, fontsize=11, color='#1f2937', pad=10)
+    ax.set_aspect('equal')
+    ax.grid(True, color='#cbd5e1', lw=0.3, alpha=0.7)
+    ax.tick_params(colors=_c_lbl, labelsize=8)
+    for spine in ['top', 'right']:
+        ax.spines[spine].set_visible(False)
+    for spine in ['bottom', 'left']:
+        ax.spines[spine].set_color('#d1d5db')
+    plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor=fig.get_facecolor())
+    plt.show()

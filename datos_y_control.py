@@ -1,7 +1,5 @@
 import transmisor,canal,receptor,utilidades
 
-
-
 print(utilidades.TP_MENSAJE)
 
 
@@ -14,7 +12,7 @@ archivo_entrada = "archivos/enviados/texto_ejemplo.txt" #utilidades.seleccionar_
 #para pruebas archivo_entrada = "archivos/texto_ejemplo.txt"
 
 #def parametros(huffman_ctrl, esquema_modulacion_ctrl , orden_ctrl , etiquetado_ctrl,ruido_awgn_ctrl,  respuesta_impulsiva_ctrl , atenuacion_ctrl,mostrar_tablas_ctrl,mostrar_resultados_ctrl,mostrar_constelaciones_ctrl):
-parametros = utilidades.parametros(True,None,None,None,None,None,None,True,True,False)
+parametros = utilidades.parametros(True,'FSK',2,None,None,None,None,True,True,False)
 
 trama_binaria, diccionario = utilidades.transmitir_archivo(archivo_entrada, parametros)
 
