@@ -194,6 +194,7 @@ def modulador(bits, esquema, M, etiquetado='gray', Eb=1.0, devolver_info=False):
 
     bits = np.asarray(bits, dtype=int)
 
+    bits_originales = bits
     # guardamos longitud original antes del padding
     n_bits_original = len(bits)
 
@@ -220,7 +221,7 @@ def modulador(bits, esquema, M, etiquetado='gray', Eb=1.0, devolver_info=False):
     ])
 
     if devolver_info:
-        return simbolos, puntos, mapa, bps, n_bits_original, n_padding
+        return simbolos, puntos, mapa, bps,bits_originales, n_bits_original, n_padding
 
     return simbolos, puntos, mapa, bps
 

@@ -120,16 +120,25 @@ def transmitir_archivo(archivo, parametros):
     if mostrar_resultados_flag: 
         print(f"\n🔹 Modulación: {M} - {esquema_modulacion}\n")
         
-    simbolos, puntos, mapa, bps, n_bits_original, n_padding = transmisor.modulador(trama_binaria, esquema_modulacion , M, 'gray', 1,True)
+    simbolos, puntos, mapa, bps,bits_originales, n_bits_original, n_padding = transmisor.modulador(trama_binaria, esquema_modulacion , M, 'gray', 1,True)
+
+    Es, Eb = transmisor.energia_media(simbolos, bps)
+
+
+    print("\nBits por simbolo:", bps)
+    print("Cantidad de simbolos transmitidos:", len(simbolos))
+    print("Padding agregado por modulador:", n_padding)
+    print("Es =", Es)
+    print("Eb =", Eb)
 
     if mostrar_constelaciones:
-        transmisor.graficar_constelacion(puntos, mapa, bps, 'Constelacion', None, None)
+        transmisor.graficar_constelacion(puntos, mapa, bps, f"\n  Modulación: {M} - {esquema_modulacion}\n", None, None)
 
 
-    return trama_binaria, diccionario, simbolos, puntos,mapa ,bps
+    return trama_binaria, diccionario, simbolos, puntos,mapa ,bps,bits_originales
 
 
-def recibir_archivo(trama_binaria_recibida, diccionario,simbolos,puntos,parametros,mapa,bps):
+def recibir_archivo(trama_binaria_recibida, diccionario,simbolos,puntos,parametros,mapa,bps,bits_originales):
 
     esquema = parametros["transmisor"]["esquema_modulacion"]
     print("\n" + "="*60)
@@ -138,11 +147,18 @@ def recibir_archivo(trama_binaria_recibida, diccionario,simbolos,puntos,parametr
 
     indices = receptor._detectar_indices(simbolos, puntos, esquema)
 
+  
     trama_binaria_recibida = receptor.demodulador(simbolos,puntos,mapa,bps,esquema)
 
+    trama_binaria_recibida = ''.join(map(str, trama_binaria_recibida))
+
+  #  Pe_simb = receptor.estimar_Pe_simbolo(simbolos_tx, simbolos, puntos, esquema)
+    Pe_bit = receptor.estimar_Pe_bit(bits_originales, trama_binaria_recibida)
+    print("Pe_bit = "+ str(Pe_bit))
+
     texto_decodificado = receptor.decodificador(trama_binaria_recibida, diccionario)
-    print("\n🔹Texto decodificado en el receptor:")
-    print(texto_decodificado)
+    print("\n🔹Texto decodificado en el receptor: archivos/recibidos/salida_receptor")
+    #print(texto_decodificado)
 
     receptor.generar_txt(texto_decodificado,"archivos/recibidos/salida_receptor")
     return 
