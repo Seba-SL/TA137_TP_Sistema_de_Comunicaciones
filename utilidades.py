@@ -137,22 +137,22 @@ def transmitir_archivo(archivo, parametros):
 
     return trama_binaria, diccionario, simbolos, puntos,mapa ,bps,bits_originales
 
-
-def recibir_archivo(trama_binaria_recibida, diccionario,simbolos,puntos,parametros,mapa,bps,bits_originales):
+#diccionario,simbolos_tx,simbolos_rx,puntos,parametros,mapa,bps,bits_tx)
+def recibir_archivo(trama_binaria_recibida, diccionario,simbolos_tx,simbolos_rx,puntos,parametros,mapa,bps,bits_originales):
 
     esquema = parametros["transmisor"]["esquema_modulacion"]
     print("\n" + "="*60)
     print("📥 RECEPTOR")
     print("="*60)
 
-    indices = receptor._detectar_indices(simbolos, puntos, esquema)
+    indices = receptor._detectar_indices(simbolos_rx, puntos, esquema)
 
   
-    trama_binaria_recibida = receptor.demodulador(simbolos,puntos,mapa,bps,esquema)
+    trama_binaria_recibida = receptor.demodulador(simbolos_rx,puntos,mapa,bps,esquema)
 
     trama_binaria_recibida = ''.join(map(str, trama_binaria_recibida))
 
-  #  Pe_simb = receptor.estimar_Pe_simbolo(simbolos_tx, simbolos, puntos, esquema)
+    Pe_simb = receptor.estimar_Pe_simbolo(simbolos_tx, simbolos_rx, puntos, esquema)
     Pe_bit = receptor.estimar_Pe_bit(bits_originales, trama_binaria_recibida)
     print("Pe_bit = "+ str(Pe_bit))
 

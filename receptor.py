@@ -60,6 +60,16 @@ def estimar_Pe_simbolo(simbolos_tx, simbolos_rx, puntos, esquema):
 def estimar_Pe_bit(bits_tx, bits_rx):
     # Compara bits transmitidos y recibidos.
     # Devuelve la probabilidad de error de bit sin redondear.
+    bits_rx = np.array([int(b) for b in bits_rx], dtype=int)
+    print("bits_tx =", type(bits_tx))
+    print("bits_tx =", bits_tx)
+
+    print("bits_rx =", type(bits_rx))
+    print("bits_rx =", bits_rx)
+  
+    bits_tx = np.asarray(bits_tx)
+    bits_rx = np.asarray(bits_rx)
+
     n = min(len(bits_tx), len(bits_rx))
     return float(np.mean(bits_tx[:n] != bits_rx[:n]))
 
