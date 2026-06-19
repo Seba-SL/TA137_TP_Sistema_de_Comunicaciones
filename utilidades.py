@@ -1,174 +1,219 @@
 import os,transmisor,canal,receptor
 import numpy as np
 
-TP_MENSAJE = "---- TP Grupo 3: Simulación y Análisis de un Sistema de Comunicaciones ----"
+def datos_control(datos_del_grupo=None):
 
-def seleccionar_archivo():
+    archivo_tx = seleccionar_archivo(datos_del_grupo)
+   
+    parametros =  seleccionar_parametros(datos_del_grupo)   
+#parametros_del_grupo_03()
+    return archivo_tx , parametros
+
+
+def seleccionar_archivo(datos_del_grupo = None):
+
+   if(os.path.isfile(datos_del_grupo["archivo_entrada"])):
+        return datos_del_grupo["archivo_entrada"]
+   else:
+     
     while True:
-        ruta = input("Ingrese la ruta del archivo de texto a transmitir: ")
+                ruta = input("Ingrese la ruta del archivo de texto a transmitir: ")
 
-        if os.path.isfile(ruta):
-            return ruta
-        else:
-            print("Error: el archivo no existe. Intente nuevamente.")
+                if os.path.isfile(ruta):
+                    return ruta
+                else:
+                    print("Error: el archivo no existe. Intente nuevamente.")
+            
 
 
-def parametros(usar_huffman, esquema_modulacion ,  M , etiquetado,ruido_awgn,  respuesta_impulsiva , atenuacion,mostrar_tablas,mostrar_resultados,mostrar_constelaciones):
+def seleccionar_parametros(datos_del_grupo=None):
 
-    param_fuente = {
-        "usar_huffman": usar_huffman
-    }
+    print("===================================")
+    print(" Configuración del sistema")
+    print("===================================")
+    grupo03 = input("¿Usar parámetros del Grupo 03? (s/n): ").lower()
 
-    param_canal = {
-        "ruido_awgn": ruido_awgn,
-        "respuesta_impulsiva": respuesta_impulsiva,
-        "atenuacion": atenuacion
-    }
+    if grupo03 == 's':
 
-    param_control = {
-        "mostrar_tablas": mostrar_tablas,
-        "mostrar_resultados": mostrar_resultados,
-        "mostrar_constelaciones": mostrar_constelaciones
-    }
+        G = datos_del_grupo["G"]
+        n = datos_del_grupo["n"]
+        k = datos_del_grupo["k"]
+        M = datos_del_grupo["M"]
+        esquema_modulacion = datos_del_grupo["esquema_modulacion"]
+        aplicar_huffman = datos_del_grupo["aplicar_huffman"]
 
-    param_transmisor = {
-        "M": M,
-        "esquema_modulacion": esquema_modulacion
-    }
+        ruido_awgn = datos_del_grupo["ruido_awgn"]
+        respuesta_impulsiva = datos_del_grupo["respuesta_impulsiva"]
+        atenuacion = datos_del_grupo["atenuacion"]
+
+        etiquetado = datos_del_grupo["etiquetado"]
+
+        ver_datos = datos_del_grupo["ver_datos"]
+        ver_estadisticas = datos_del_grupo["ver_estadisticas"]
+        ver_constelaciones = datos_del_grupo["ver_constelaciones"]
+
+        archivo_tx = datos_del_grupo["archivo_entrada"]
+
+        print("\n=== PARÁMETROS GRUPO 03 ===")
+
+        print("Fuente de información:\n")
+        print("Archivo a transmitir: ", archivo_tx)
+
+        print("\nCodificación de fuente:\n")
+        print(f"Aplicar Huffman = {aplicar_huffman}")
+
+        print("\nCodificación de canal:\n")
+
+        print(f"Matriz generadora: G = {G}")
+        print(f"k = {k}")
+        print(f"n = {n}")
+
+        print("\nModulación:\n")
+        print(f"Catiddad de simbolos: M = {M}")
+        print(f"Esquema de modulación = {esquema_modulacion}")
+        print(f"Codigo etiquetado: " + str(etiquetado))
+
+        print("\nCanal:\n")
+        print(f"Ruido AWGN = {ruido_awgn}")
+        print(f"Respuesta impulsiva = {respuesta_impulsiva}")
+        print(f"Eb/N0 = {atenuacion} dB")
+       
+    else:
+
+        print("\n=== CONFIGURACIÓN DEL TRANSMISOR ===")
+
+        M = int(input("M (2,4,8,16,...): "))
+        G = eval(input("Ingrese la matriz: "))
+        n = int(input("Segmentacion de trama binaria  n: "))
+        k = int(input("Palabras de código de n bits  k: "))
+        esquema_modulacion = input("Esquema de modulación (PSK/QAM/FSK): ")
+        aplicar_huffman = input("¿Aplicar Huffman? (s/n): ").lower() == 's'
+
+        print("\n=== CONFIGURACIÓN DEL CANAL ===")
+
+        ruido_awgn = input("¿Agregar ruido AWGN? (s/n): ").lower() == 's'
+        respuesta_impulsiva = input("¿Aplicar respuesta impulsiva? (s/n): ").lower() == 's'
+        atenuacion = float(input("Eb/N0 [dB]: "))
+
+        print("\n=== VISUALIZACIÓN ===")
+
+        ver_datos = input("¿Mostrar datos? (s/n): ").lower() == 's'
+        ver_estadisticas = input("¿Mostrar estadísticas? (s/n): ").lower() == 's'
+        ver_constelaciones = input("¿Mostrar constelaciones? (s/n): ").lower() == 's'
 
     parametros = {
-        "fuente": param_fuente,
-        "transmisor": param_transmisor,
-        "canal": param_canal,
-        "control": param_control
+        "transmisor": {
+            "M": M,
+            "esquema_modulacion": esquema_modulacion,
+            "aplicar_huffman": aplicar_huffman,
+            "etiquetado":etiquetado,
+            "G":G,
+            "k":k
+        },
+
+        "canal": {
+            "ruido_awgn": ruido_awgn,
+            "respuesta_impulsiva": respuesta_impulsiva,
+            "atenuacion": atenuacion
+        },
+
+        "receptor": {
+            "ruido_awgn": ruido_awgn,
+            "respuesta_impulsiva": respuesta_impulsiva,
+            "atenuacion": atenuacion
+        },
+
+        "utilidades": {
+            "ver_datos": ver_datos,
+            "ver_estadisticas": ver_estadisticas,
+            "ver_constelaciones": ver_constelaciones
+        }
     }
 
-
-    return  parametros
-
-
-def mostrar(vector_probabilidades,entropia,vector_codigos, diccionario,Long_cod,vector_codificado,trama_binaria ,long_min,mostrar_tablas_flag,mostrar_constelaciones):
-
-    print("\n" + "="*50)
-    print("📊 RESULTADOS")
-    print("="*50)
-    
-    if(mostrar_tablas_flag):
-        print("\n🔹 Vector de probabilidades:")
-        print(vector_probabilidades)
-
-    print("\n🔹 Entropía:")
-    print(f"{entropia:.4f} bits")
+    return parametros
 
 
-    if(mostrar_tablas_flag):
-        print("\n🔹 Vector de códigos:")
-        print(vector_codigos)
 
-    print("\n🔹 Diccionario (símbolo -> código):")
-    for simbolo, codigo in diccionario.items():
-        print(f"  {simbolo} -> {codigo}")
-
-    print("\n🔹 Longitud promedio del código:")
-    print(f"{Long_cod:.4f} bits")
-
-    print("\n🔹 Longitud minima del código:")
-    print(f"{long_min:.4f} bits")
-
-    if(mostrar_tablas_flag):
-        print("\n🔹 Vector codificado:")
-        print(vector_codificado)
-
-    if(mostrar_tablas_flag):
-        print("\n🔹 Trama binaria:")
-        print(trama_binaria)
-
-    print("\n" + "="*50)
-    return
-
-
-def transmitir_archivo(archivo, parametros):
-
-    usar_huffman = parametros["fuente"]["usar_huffman"]
-    ruido = parametros["canal"]["ruido_awgn"]
-    mostrar_resultados_flag = parametros["control"]["mostrar_resultados"]
-    mostrar_tablas_flag = parametros["control"]["mostrar_tablas"]
-    mostrar_constelaciones = parametros["control"]["mostrar_constelaciones"]
-    M = parametros["transmisor"]["M"]
-    esquema_modulacion = parametros["transmisor"]["esquema_modulacion"]
+def mostrar_datos_tx(datos_tx, parametros):
 
     print("\n" + "="*60)
     print("📡 TRANSMISOR")
     print("="*60)
+     
+    if(parametros["utilidades"]["ver_datos"]):
+        print("\nVector de probabilidades:\n " , datos_tx["Vector probabilidades"])
+        print("\nDiccionario de Huffman:\n " , datos_tx["Diccionario Huffman"])
+        print("\nVector codificado :\n " , datos_tx["Vector codificado"])
+        print("\ntrama_binaria :\n " , datos_tx["Trama binaria"])
     
 
-    vector_probabilidades = transmisor.obtener_vector_probabilidades(archivo)
-    probabilidades = vector_probabilidades[:, 1].astype(float)
-    entropia = transmisor.Calcular_entropia(probabilidades)
-
-    vector_codigos, diccionario = transmisor.vector_codigo_huffman(vector_probabilidades)
-
-    long_min,Long_cod = transmisor.longitudes_codigo(vector_probabilidades, diccionario)
-
-    vector_codificado, trama_binaria = transmisor.codificar_texto_huffman(archivo,diccionario)
-
-    if mostrar_resultados_flag: 
-        mostrar(vector_probabilidades, entropia, vector_codigos, diccionario,Long_cod, vector_codificado, trama_binaria,long_min,mostrar_tablas_flag,mostrar_constelaciones)
-
-    # item C
-
-    if mostrar_resultados_flag: 
-        print(f"\n🔹 Modulación: {M} - {esquema_modulacion}\n")
-        
-    simbolos, puntos, mapa, bps,bits_originales, n_bits_original, n_padding = transmisor.modulador(trama_binaria, esquema_modulacion , M, 'gray', 1,True)
-
-    Es, Eb = transmisor.energia_media(simbolos, bps)
+    if(parametros["utilidades"]["ver_estadisticas"]):
+        print("\nEntropia:\n " , datos_tx["Entropia"])
+        print("\nlongitud minima :\n " , datos_tx["Longitud minima"])
+        print("\nlongitud promedio :\n " , datos_tx["Longitud promedio"])
+        print("\nEficiencia:\n " , datos_tx["Longitud minima"]/datos_tx["Longitud promedio"])
+        print("\nEnergia media :\n " ,datos_tx["Energia media"])
+    
 
 
-    print("\nBits por simbolo:", bps)
-    print("Cantidad de simbolos transmitidos:", len(simbolos))
-    print("Padding agregado por modulador:", n_padding)
-    print("Es =", Es)
-    print("Eb =", Eb)
 
-    if mostrar_constelaciones:
-        transmisor.graficar_constelacion(puntos, mapa, bps, f"\n  Modulación: {M} - {esquema_modulacion}\n", None, None)
+    return
 
 
-    return trama_binaria, diccionario, simbolos, puntos,mapa ,bps,bits_originales
 
-#diccionario,simbolos_tx,simbolos_rx,puntos,parametros,mapa,bps,bits_tx)
-def recibir_archivo(trama_binaria_recibida, diccionario,simbolos_tx,simbolos_rx,puntos,parametros,mapa,bps,bits_originales):
+def mostrar_datos_rx(datos_salida, parametros):
+    
 
-    esquema = parametros["transmisor"]["esquema_modulacion"]
     print("\n" + "="*60)
     print("📥 RECEPTOR")
     print("="*60)
-
-    indices = receptor._detectar_indices(simbolos_rx, puntos, esquema)
-
-  
-    trama_binaria_recibida = receptor.demodulador(simbolos_rx,puntos,mapa,bps,esquema)
-
-    trama_binaria_recibida = ''.join(map(str, trama_binaria_recibida))
-
-    Pe_simb = receptor.estimar_Pe_simbolo(simbolos_tx, simbolos_rx, puntos, esquema)
-    Pe_bit = receptor.estimar_Pe_bit(bits_originales, trama_binaria_recibida)
-    print("Pe_bit = "+ str(Pe_bit))
-
-    texto_decodificado = receptor.decodificador(trama_binaria_recibida, diccionario)
-    print("\n🔹Texto decodificado en el receptor: archivos/recibidos/salida_receptor")
-    #print(texto_decodificado)
-
-    receptor.generar_txt(texto_decodificado,"archivos/recibidos/salida_receptor")
-    return 
+    
 
 
-# item C 
+    if(parametros["utilidades"]["ver_datos"]):
+            print("\nTexto decodificado:")
+            print(datos_salida["Texto decodificado"])
+            print("\nBits RX:")
+            print(datos_salida["Bits RX"])
 
-def _gray(n):
-    # genera array con los n codigos de Gray: indice -> valor Gray
-    return np.array([i ^ (i >> 1) for i in range(n)])
+
+
+    if(parametros["utilidades"]["ver_estadisticas"]):
+        print(
+            "\nProbabilidad de error de simbolo:",
+            datos_salida["Probabilidad error simbolo"]
+        )
+
+        print(
+            "\nProbabilidad de error de bit:",
+            datos_salida["Probabilidad error bit"]
+        )
+
+   
+
+
+    return
+
+
+def mostrar_datos_canal(parametros):
+
+    print("\n" + "="*60)
+    print("🌪️ CANAL:")
+    print("="*60)
+    
+    if(parametros["utilidades"]["ver_datos"]):
+        if(parametros["canal"]["ruido_awgn"]):
+            print("\nRuido AWGN")
+
+        if(parametros["canal"]["respuesta_impulsiva"]):
+            print("\nRespuesta impulsiva")
+
+        if(parametros["canal"]["atenuacion"]):
+            print("\nRespuesta impulsiva")
+
+    return
+
+
 
 def _constelacion_qam(M, Eb=1.0):
     # constelacion cuadrada M-QAM normalizada a Eb dado
@@ -204,3 +249,8 @@ def _constelacion_fsk(M, Eb=1.0):
     puntos = np.sqrt(Es) * np.eye(M)
     mapa = np.arange(M)      # orden natural siempre para FSK
     return puntos, mapa, mapa, bps
+
+
+def _gray(n):
+    # genera array con los n codigos de Gray: indice -> valor Gray
+    return np.array([i ^ (i >> 1) for i in range(n)])
