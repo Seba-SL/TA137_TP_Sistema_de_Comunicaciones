@@ -19,7 +19,7 @@ datos_del_grupo = {
     "ruido_awgn": True,
     "respuesta_impulsiva": False,
     "atenuacion": 6,
-    "etiquetado":'gray',  # o binario
+    "etiquetado":'binario',  # gray o binario
     "G":G,
     "n":n,
     "k":k,

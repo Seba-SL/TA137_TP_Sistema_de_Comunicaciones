@@ -21,14 +21,22 @@ def transmitir_archivo(archivo_tx , parametros ):
 
     vector_codificado, trama_binaria = v_codificar_codigo(archivo_tx, diccionario_huffman)
 
-    
-    # D)
-    codificador_canal(trama_binaria, parametros["transmisor"]["k"], parametros["transmisor"]["G"], True)
+    print("Bits originales, codificacion de fuente: "+ trama_binaria)
 
+    # D)
+    bits_codificados,n_bits_original,n_padding = codificador_canal(trama_binaria, parametros["transmisor"]["k"], parametros["transmisor"]["G"], True)
+
+    
+    print("Bits codificacion de canal: ")
+
+    print(''.join(map(str, bits_codificados)))
+
+
+    print("\nNumero de rellenos: "+str(n_padding))
 
     #C)
     #símbolos modulados, 
-    simbolos, puntos, mapa, bps = i_modulador(trama_binaria, parametros) 
+    simbolos, puntos, mapa, bps = i_modulador(bits_codificados, parametros) 
 
     energia_media = ii_energia_media(simbolos, bps)
     

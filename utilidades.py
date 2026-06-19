@@ -108,7 +108,8 @@ def seleccionar_parametros(datos_del_grupo=None):
             "aplicar_huffman": aplicar_huffman,
             "etiquetado":etiquetado,
             "G":G,
-            "k":k
+            "k":k,
+            "n":n
         },
 
         "canal": {
