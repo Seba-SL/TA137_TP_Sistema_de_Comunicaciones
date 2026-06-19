@@ -5,6 +5,7 @@
 
 <img width="641" height="391" alt="readme_diagrama" src="https://github.com/user-attachments/assets/538e9502-5360-4da7-ab93-b8c2e4d500df" />
 
+<img width="536" height="222" alt="image" src="https://github.com/user-attachments/assets/dd7f91e2-1f68-4bb1-b1e2-ab80c04e5aac" />
 
 
 #Algoritmo de Huffman
