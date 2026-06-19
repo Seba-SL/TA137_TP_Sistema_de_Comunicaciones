@@ -201,15 +201,14 @@ def mostrar_datos_canal(parametros):
     print("🌪️ CANAL:")
     print("="*60)
     
-    if(parametros["utilidades"]["ver_datos"]):
-        if(parametros["canal"]["ruido_awgn"]):
-            print("\nRuido AWGN")
+    if(parametros["canal"]["ruido_awgn"]):
+        print("\nRuido AWGN")
 
-        if(parametros["canal"]["respuesta_impulsiva"]):
-            print("\nRespuesta impulsiva")
+    if(parametros["canal"]["respuesta_impulsiva"]):
+        print("\nRespuesta impulsiva")
 
-        if(parametros["canal"]["atenuacion"]):
-            print("\nRespuesta impulsiva")
+    if(parametros["canal"]["atenuacion"]):
+        print("\nRespuesta impulsiva")
 
     return
 

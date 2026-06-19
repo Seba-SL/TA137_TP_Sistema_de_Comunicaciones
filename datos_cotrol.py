@@ -12,7 +12,7 @@ n=15   # Palabras de código de n bits
 
 
 datos_del_grupo = {
-    "archivo_entrada":"archivos/enviados/texto_largo_quijote.txt", # si queres entrar archivo por teclado colcocar: False 
+    "archivo_entrada":"archivos/enviados/texto_ejemplo.txt", # si queres entrar archivo por teclado colcocar: False 
     "M": 16, #tamaño de la constelación, M
     "esquema_modulacion": "QAM",  #esquemas de banda base y banda pasante
     "aplicar_huffman": True,
@@ -23,10 +23,12 @@ datos_del_grupo = {
     "G":G,
     "n":n,
     "k":k,
-    "ver_datos": False,
+    "ver_datos": True,
     "ver_estadisticas": True,
     "ver_constelaciones": True
 }
+
+print("---- TP Grupo 3: Simulación y Análisis de un Sistema de Comunicaciones ----")
 
 archivo_tx , parametros  = utilidades.datos_control(datos_del_grupo)
 
