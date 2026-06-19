@@ -14,8 +14,7 @@
 
 
 Texto corto, salda de datos y estadisticas:
-```bash
----- TP Grupo 3: Simulación y Análisis de un Sistema de Comunicaciones ----
+```bash---- TP Grupo 3: Simulación y Análisis de un Sistema de Comunicaciones ----
 ===================================
  Configuración del sistema
 ===================================
@@ -40,7 +39,7 @@ Modulación:
 
 Catiddad de simbolos: M = 16
 Esquema de modulación = QAM
-Codigo etiquetado: gray
+Codigo etiquetado: binario
 
 Canal:
 
@@ -115,7 +114,11 @@ Eficiencia:
   0.9911506250257848
 
 Energia media :
-  (21.428571, 5.357143)
+  (23.431953, 5.857988)
+
+Numero de bits original 446
+
+Numero de bits de rellenos 4
 
 ============================================================
 🌪️ CANAL:
@@ -145,8 +148,7 @@ Bits RX:
  0 0 1 1 0 0 1 1 1 0 0 0 1 1 1 1 0 1 1 1 1 0 1 0 0 1 1 1 0 1 1 1 1 0 1 0 1
  1 0 1 1 0 1 0 1 0 1 0 1 0 0 1 0 1 1 0 0 0 1 1 1 1 1 0 1 0 0 0 1 1 0 1 1 1
  1 1 1 1 0 0 1 0 1 0 1 0 1 1 0 0 0 1 1 0 1 0 0 0 0 1 1 1 0 0 1 0 1 1 1 1 0
- 1 0 0 0]
-
+ 1 0]
 
 ```
 
