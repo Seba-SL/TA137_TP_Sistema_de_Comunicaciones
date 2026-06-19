@@ -179,7 +179,7 @@ Modulación:
 
 Catiddad de simbolos: M = 16
 Esquema de modulación = QAM
-Codigo etiquetado: gray
+Codigo etiquetado: binario
 
 Canal:
 
@@ -204,7 +204,11 @@ Eficiencia:
   0.9915983513746094
 
 Energia media :
-  (22.405358, 5.60134)
+  (23.71151, 5.927878)
+
+Numero de bits original 9264062
+
+Numero de bits de rellenos 3
 
 ============================================================
 🌪️ CANAL:
@@ -218,7 +222,7 @@ Respuesta impulsiva
 📥 RECEPTOR
 ============================================================
 
-Probabilidad de error de simbolo: 2.0293469475167702e-05
+Probabilidad de error de simbolo: 1.813458713374071e-05
 
-Probabilidad de error de bit: 5.0733684640711605e-06
+Probabilidad de error de bit: 6.476640592431269e-07
 ```
