@@ -58,6 +58,7 @@ def transmitir_archivo(archivo_tx , parametros ):
     
     datos_tx["Vector codificado"] = vector_codificado
     datos_tx["Trama binaria"] = trama_binaria
+    datos_tx["n_bits_original"] = n_bits_original
     
     datos_tx["Simbolos"] = simbolos
     datos_tx["Puntos"] = puntos

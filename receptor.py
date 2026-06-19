@@ -21,7 +21,7 @@ def recibir_datos(datos_tx, datos_rx , parametros):
 
     tabla_s = ii_tabla_sindromes(H, parametros["transmisor"]["n"])
 
-    bits_rx = iv_decodificador_canal(bits_rx, parametros["transmisor"]["k"], parametros["transmisor"]["n"], H, tabla_s, n_bits_original=None)
+    bits_rx = iv_decodificador_canal(bits_rx, parametros["transmisor"]["k"], parametros["transmisor"]["n"], H, tabla_s, datos_tx["n_bits_original"])
 
     #B)
     texto_decodificado_fuente = vi_decodificador_fuente(bits_rx, datos_tx["Diccionario Huffman"])
